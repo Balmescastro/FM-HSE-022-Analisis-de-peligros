@@ -1,0 +1,8 @@
+[
+  { "nombre": "Álvaro", "apellido": "Calderón", "cedula": "108262111", "area": "MEC" },
+  { "nombre": "Álvaro", "apellido": "Gómez", "cedula": "108262112", "area": "MEC" },
+  { "nombre": "Carlos", "apellido": "Pérez", "cedula": "108262113", "area": "ELE" },
+  { "nombre": "Carmen", "apellido": "Sánchez", "cedula": "108262114", "area": "ELE" },
+  { "nombre": "Alberto", "apellido": "Martínez", "cedula": "108262115", "area": "INS" },
+  { "nombre": "Alejandro", "apellido": "Díaz", "cedula": "108262116", "area": "CIV" }
+]
