@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="ESQUIVENSA - FM-HSE-022 - Análisis Continuo de Peligros por la Tarea">
+  <meta name="theme-color" content="#00193c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.json">
+  <title>ESQUIVENSA - Análisis de Peligros</title>
+  
+  <!-- CSS y Fuentes -->
+  <script src="lib/tailwind.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#00193c', // Azul marino profundo de ESQUIVENSA
+            accent: '#fcd400',  // Amarillo/Naranja corporativo
+            bglight: '#f1f5f9'  // Fondo gris azulado suave
+          }
+        }
+      }
+    }
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f1f5f9;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    .custom-shadow {
+      box-shadow: 0 4px 6px -1px rgba(0, 25, 60, 0.05), 0 2px 4px -2px rgba(0, 25, 60, 0.05);
+    }
+    /* Estilos personalizados para transiciones de paso */
+    .wizard-step {
+      display: none;
+    }
+    .wizard-step.active {
+      display: block;
+    }
+
+    /* ── MODO OSCURO (DARK MODE OVERRIDES) ── */
+    html.dark body {
+      background-color: #0b0f19 !important;
+      color: #f1f5f9 !important;
+    }
+    html.dark .bg-white {
+      background-color: #111827 !important;
+    }
+    html.dark .hover\:bg-slate-50:hover {
+      background-color: #1f2937 !important;
+    }
+    html.dark .custom-shadow {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Tarjetas de Selección Activa */
+    html.dark .bg-blue-50 { background-color: #1e3a8a33 !important; }
+    html.dark .bg-green-50 { background-color: #064e3b33 !important; }
+    html.dark .bg-red-50 { background-color: #7f1d1d33 !important; }
+    html.dark .bg-amber-50 { background-color: #78350f33 !important; }
+    html.dark .bg-amber-50\/50 { background-color: #78350f22 !important; }
+
+    /* Bordes */
+    html.dark .border-slate-200 { border-color: #374151 !important; }
+    html.dark .border-slate-100 { border-color: #1f2937 !important; }
+    html.dark .border-blue-300 { border-color: #3b82f6 !important; }
+    html.dark .border-green-300 { border-color: #10b981 !important; }
+    html.dark .border-red-300 { border-color: #ef4444 !important; }
+    html.dark .border-amber-200 { border-color: #f59e0b !important; }
+
+    /* Textos */
+    html.dark .text-\[\#171c1f\] { color: #f3f4f6 !important; }
+    html.dark .text-slate-700 { color: #d1d5db !important; }
+    html.dark .text-slate-600 { color: #9ca3af !important; }
+    html.dark .text-slate-500 { color: #9ca3af !important; }
+    html.dark .text-\[\#43474f\] { color: #9ca3af !important; }
+    html.dark .text-\[\#747781\] { color: #9ca3af !important; }
+    html.dark .text-primary { color: #f8fafc !important; }
+    html.dark .text-green-900 { color: #a7f3d0 !important; }
+    html.dark .text-red-900 { color: #fecaca !important; }
+    html.dark .text-red-600 { color: #fca5a5 !important; }
+    html.dark .text-red-500 { color: #fca5a5 !important; }
+    html.dark .hover\:bg-red-50:hover { background-color: #7f1d1d33 !important; }
+    html.dark .text-\[\#002d62\] { color: #fcd400 !important; }
+
+    /* Inputs y Elementos de Formulario */
+    html.dark input, 
+    html.dark textarea, 
+    html.dark select {
+      background-color: #1f2937 !important;
+      color: #f9fafb !important;
+      border-color: #374151 !important;
+    }
+    html.dark input:focus, 
+    html.dark textarea:focus, 
+    html.dark select:focus {
+      --tw-ring-color: #3b82f6 !important;
+      border-color: #3b82f6 !important;
+    }
+    html.dark input[type="date"] {
+      color-scheme: dark;
+    }
+
+    /* Pasos del Wizard (Navegación) */
+    html.dark .bg-slate-200 { background-color: #374151 !important; }
+    html.dark .bg-slate-50 { background-color: #1f2937 !important; }
+    html.dark .bg-slate-100 { background-color: #1f2937 !important; }
+    html.dark .bg-slate-50\/30 { background-color: #1f293722 !important; }
+
+    /* Barra inferior fija */
+    html.dark nav#wizard-navigation {
+      background-color: #111827 !important;
+      border-top-color: #374151 !important;
+    }
+    html.dark nav#wizard-navigation button:not(.bg-primary) {
+      color: #3b82f6 !important;
+    }
+    html.dark nav#wizard-navigation button:not(.bg-primary):hover {
+      background-color: #1f2937 !important;
+    }
+
+    /* Animaciones de Toast */
+    @keyframes toast-in {
+      from { transform: translateY(-1rem); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes toast-out {
+      from { transform: translateY(0); opacity: 1; }
+      to { transform: translateY(-1rem); opacity: 0; }
+    }
+    .animate-toast-in {
+      animation: toast-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .animate-toast-out {
+      animation: toast-out 0.2s ease forwards;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased select-none text-[#171c1f]">
+
+  <!-- Barra Superior (TopAppBar) -->
+  <header class="bg-primary border-b border-[#2c3134] flex items-center justify-between w-full px-4 md:px-8 z-50 fixed h-16 top-0 left-0">
+    <div class="flex items-center gap-3 bg-white py-1 px-3 rounded-lg shadow-sm">
+      <img alt="ESQUIVENSA Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-LK9tFkpd63wQtbjDElKvWV00BWf5QxnmLl4Bcy8krecMUgFgiSDL-h-HOvTNXrZnC0RM1j0z7IWDl2ZSmQSwtRIx4q0IKOhB8fZoibSwi6RVFN0i0Jq2Pt_oX7rzu1LlojZ9E1C4HkrqIutxL11eYhXlG75OjVbfDV6OLXNDRmqFI8PCXuOTbV4ZZmgGEeQv80IE4t6sNYekcmxsSRpoL7gnrwDtnDK284BcvxWY7GhPWQRoY0Fv2uWCKtwPmfeVxA">
+      <h1 class="font-bold text-[12px] md:text-sm text-primary tracking-tight">FM-HSE-022 — ANÁLISIS DE PELIGROS</h1>
+    </div>
+    
+    <div class="relative flex items-center">
+      <!-- Botón Hamburguesa -->
+      <button class="p-2 text-white hover:bg-white/10 rounded-full transition-colors flex items-center justify-center active:scale-95" id="btn-menu-trigger" aria-haspopup="true" aria-expanded="false" title="Menú de acciones">
+        <span class="material-symbols-outlined text-[24px]">menu</span>
+      </button>
+
+      <!-- Panel Flotante del Menú (Dropdown) -->
+      <div class="hidden absolute right-0 top-12 bg-white border border-slate-200 rounded-lg p-2 custom-shadow w-56 flex flex-col gap-1 z-50 transition-all duration-150" id="header-dropdown-menu">
+        
+        <!-- Opción: Cambiar Tema -->
+        <button type="button" class="w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold text-[#171c1f] hover:bg-slate-50 rounded-md transition-colors text-left" id="btn-toggle-theme">
+          <span class="material-symbols-outlined text-[18px] text-slate-500" id="theme-menu-icon">dark_mode</span>
+          <span id="theme-menu-text">Modo Oscuro</span>
+        </button>
+
+        <!-- Opción: Cargar Borrador -->
+        <button type="button" class="w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold text-[#171c1f] hover:bg-slate-50 rounded-md transition-colors text-left" id="btn-import-backup">
+          <span class="material-symbols-outlined text-[18px] text-slate-500">upload_file</span>
+          <span>Cargar Borrador</span>
+        </button>
+
+        <!-- Opción: Descargar Borrador -->
+        <button type="button" class="w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold text-[#171c1f] hover:bg-slate-50 rounded-md transition-colors text-left" id="btn-export-backup">
+          <span class="material-symbols-outlined text-[18px] text-slate-500">download</span>
+          <span>Descargar Borrador</span>
+        </button>
+
+        <!-- Opción: Configuración HSE -->
+        <button type="button" class="w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold text-[#171c1f] hover:bg-slate-50 rounded-md transition-colors text-left" id="btn-admin-trigger">
+          <span class="material-symbols-outlined text-[18px] text-slate-500">settings</span>
+          <span>Configuración HSE</span>
+        </button>
+
+        <!-- Divisor -->
+        <hr class="border-slate-100 my-1">
+
+        <!-- Opción: Borrar Formulario -->
+        <button type="button" class="w-full flex items-center gap-3 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-50 rounded-md transition-colors text-left" id="btn-new-form">
+          <span class="material-symbols-outlined text-[18px] text-red-500">delete_forever</span>
+          <span>Borrar Formulario</span>
+        </button>
+      </div>
+    </div>
+    <input type="file" id="input-import-file" accept=".json" hidden>
+  </header>
+
+  <!-- Contenido Principal (Canvas del Formulario por Pantallas) -->
+  <main class="flex-grow pb-16 px-2 md:px-6 max-w-full md:max-w-3xl mx-auto w-full pt-[72px]" id="app-main">
+
+    <!-- Banner de borrador guardado -->
+    <div class="draft-banner hidden bg-amber-50 border border-amber-200 dark:bg-amber-950/30 dark:border-amber-900/50 rounded-xl p-4 custom-shadow mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-fade-in" id="draft-banner" role="alert">
+      <div class="flex items-start gap-3">
+        <span class="material-symbols-outlined text-amber-600 dark:text-amber-400 text-[22px] mt-0.5">info</span>
+        <div class="space-y-1">
+          <p class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wide">Borrador en progreso encontrado</p>
+          <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-normal" id="draft-banner-text">Se encontró un formulario en progreso.</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2.5 self-end sm:self-center">
+        <button class="bg-primary text-white text-[11px] font-bold px-4 py-2 rounded-lg shadow-md hover:opacity-95 transition-all active:scale-95 cursor-pointer outline-none" id="btn-restore-draft">Continuar</button>
+        <button class="border border-slate-200 dark:border-slate-700 text-[#43474f] dark:text-slate-300 text-[11px] font-semibold px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer outline-none" id="btn-discard-draft">Descartar</button>
+      </div>
+    </div>
+
+    <!-- Pantalla de carga -->
+    <div class="loading-screen py-12 flex flex-col items-center justify-center" id="loading-screen" role="status">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <p class="mt-3 text-sm text-[#43474f]">Cargando configuración...</p>
+    </div>
+
+    <form class="form-hse space-y-4" id="form-hse" novalidate hidden>
+
+      <!-- Barra de progreso superior -->
+      <section class="mb-1" id="wizard-progress-section">
+        <div class="flex flex-col items-center gap-2.5 border-b border-slate-100 pb-1.5 dark:border-slate-800">
+          <h2 class="font-bold text-primary uppercase text-[10px] tracking-wider text-center" id="wizard-progress-title">
+            PANTALLA 1 DE 8: INFORMACIÓN GENERAL
+          </h2>
+          <!-- Progress Dots -->
+          <div class="flex gap-2 sm:gap-3.5 items-center justify-center flex-nowrap flex-row" id="wizard-progress-dots">
+            <!-- Renderizado dinámico desde JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ── PANTALLA 1: INFORMACIÓN GENERAL ── -->
+      <div class="wizard-step active !mt-1" id="step-1">
+        <div class="bg-white rounded-lg border border-slate-200 p-3 sm:p-4 custom-shadow space-y-4">
+          <!-- Tarea -->
+          <div class="space-y-1">
+            <label class="block text-xs font-bold text-primary uppercase tracking-tight" for="inp-tarea">Descripción de la Tarea</label>
+            <textarea class="w-full bg-white border border-slate-200 rounded-lg p-3 text-sm text-[#171c1f] focus:ring-2 focus:ring-primary focus:border-primary transition-all resize-none" id="inp-tarea" placeholder="Describa la tarea a ejecutar de forma específica..." rows="2"></textarea>
+            <p class="text-[10px] text-[#43474f] italic mt-1">
+              Identificar continuamente los peligros generados por la tarea y tomaré las medidas de control para prevenir accidentes.
+            </p>
+          </div>
+
+          <!-- Lugar -->
+          <div class="space-y-1">
+            <label class="block text-xs font-bold text-primary uppercase tracking-tight" for="inp-lugar">Lugar</label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#747781] text-[18px]">location_on</span>
+              <input class="w-full bg-white border border-slate-200 rounded-lg py-2.5 pl-10 pr-3 text-sm text-[#171c1f] focus:ring-2 focus:ring-primary focus:border-primary transition-all" id="inp-lugar" type="text" placeholder="Ej: Planta de cloro - Área Sur">
+            </div>
+          </div>
+
+          <!-- Fecha -->
+          <div class="space-y-1">
+            <label class="block text-xs font-bold text-primary uppercase tracking-tight" for="inp-fecha">Fecha</label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#747781] text-[18px]">calendar_today</span>
+              <input class="w-full bg-white border border-slate-200 rounded-lg py-2.5 pl-10 pr-3 text-sm text-[#171c1f] focus:ring-2 focus:ring-primary focus:border-primary transition-all" id="inp-fecha" type="date">
+            </div>
+          </div>
+
+          <!-- Área Ejecutora -->
+          <div class="space-y-1">
+            <label class="block text-xs font-bold text-primary uppercase tracking-tight" for="inp-area-ejecutora">Área Ejecutora</label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#747781] text-[18px]">engineering</span>
+              <select class="w-full bg-white border border-slate-200 rounded-lg py-2.5 pl-10 pr-10 appearance-none text-sm text-[#171c1f] focus:ring-2 focus:ring-primary focus:border-primary transition-all" id="inp-area-ejecutora">
+                <option value="">Seleccione un área...</option>
+              </select>
+              <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#747781] pointer-events-none text-[20px]">arrow_drop_down</span>
+            </div>
+          </div>
+
+          <!-- Consecutivo -->
+          <div class="space-y-1">
+            <label class="block text-xs font-bold text-primary uppercase tracking-tight" for="inp-consecutivo">Consecutivo</label>
+            <div class="relative flex items-center">
+              <span class="material-symbols-outlined absolute left-3 text-[#747781] text-[18px]">tag</span>
+              <input class="w-full bg-white border border-slate-200 rounded-lg py-2.5 pl-10 pr-12 text-sm text-[#171c1f] focus:ring-2 focus:ring-primary focus:border-primary transition-all" id="inp-consecutivo" type="text" readonly>
+              <button class="absolute right-3 p-1.5 hover:bg-slate-100 rounded-full transition-colors text-primary" id="btn-regenerar-consec" type="button">
+                <span class="material-symbols-outlined text-[18px]">refresh</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PANTALLA 2: RESPONSABLES DE LA TAREA ── -->
+      <div class="wizard-step !mt-1" id="step-2">
+        <div class="bg-white rounded-lg border border-slate-200 p-3 sm:p-4 custom-shadow space-y-3">
+          <div class="flex justify-between items-center">
+            <h3 class="font-bold text-primary text-sm uppercase">Lista de Responsables</h3>
+            <span class="text-xs font-medium text-[#43474f]" id="responsables-counter">0 / 8 registrados</span>
+          </div>
+
+          <!-- Formulario rápido de ingreso -->
+          <div class="bg-slate-50 p-3 rounded border border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-3" id="form-add-responsable">
+            <div class="space-y-1 relative">
+              <label class="block text-[10px] font-bold text-primary uppercase" for="resp-nombre">Nombre y Apellido</label>
+              <input class="w-full bg-white border border-slate-200 rounded-lg py-2 px-3 text-xs text-[#171c1f] focus:ring-1 focus:ring-primary focus:border-primary" id="resp-nombre" type="text" placeholder="Nombre completo" autocomplete="off">
+              <div id="autocomplete-resp-nombre" class="hidden absolute left-0 right-0 top-[56px] bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-36 overflow-y-auto divide-y divide-slate-100"></div>
+            </div>
+            <div class="space-y-1 relative">
+              <label class="block text-[10px] font-bold text-primary uppercase" for="resp-cedula">Cédula</label>
+              <input class="w-full bg-white border border-slate-200 rounded-lg py-2 px-3 text-xs text-[#171c1f] focus:ring-1 focus:ring-primary focus:border-primary" id="resp-cedula" type="text" placeholder="Documento ID" autocomplete="off">
+              <div id="autocomplete-resp-cedula" class="hidden absolute left-0 right-0 top-[56px] bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-36 overflow-y-auto divide-y divide-slate-100"></div>
+            </div>
+            <div class="md:col-span-2 flex justify-end">
+              <button class="bg-primary text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center gap-1.5" id="btn-add-responsable" type="button">
+                <span class="material-symbols-outlined text-[16px]">person_add</span>
+                Agregar a la Lista
+              </button>
+            </div>
+          </div>
+
+          <!-- List Section Table -->
+          <div class="form-card bg-white rounded-lg border border-slate-200 overflow-hidden mt-4" id="table-responsables-container" style="display: none;">
+            <div class="bg-primary p-4 flex items-center justify-between">
+              <h3 class="text-xs font-bold text-white uppercase tracking-wider">Responsables Registrados</h3>
+              <span class="bg-[#002d62] text-[#7796d1] px-3 py-1 rounded-full text-xs font-bold" id="responsables-badge">0 Miembros</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-slate-50 border-b border-slate-200">
+                    <th class="px-2 py-2 text-xs font-bold text-primary uppercase">Trabajador</th>
+                    <th class="px-2 py-2 text-xs font-bold text-primary uppercase">Cédula</th>
+                    <th class="px-2 py-2 text-xs font-bold text-primary uppercase text-right">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100" id="tbody-responsables">
+                  <!-- Renderizado dinámico -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PANTALLA 3: UBICACIÓN DE EMERGENCIA ── -->
+      <div class="wizard-step !mt-1" id="step-3">
+        <div class="bg-white rounded-lg border border-slate-200 p-3 sm:p-4 custom-shadow space-y-4">
+          <div class="space-y-1" id="body-encuentro">
+            <!-- Renderizado por app.js -->
+          </div>
+
+          <div class="space-y-1" id="body-ducha">
+            <!-- Renderizado por app.js -->
+          </div>
+
+          <!-- Advertencia de Ubicaciones -->
+          <div class="p-4 bg-blue-50 border border-blue-100 rounded-lg flex items-start gap-3 mt-4">
+            <span class="material-symbols-outlined text-primary text-[20px]">info</span>
+            <p class="text-xs text-[#002d62]">Ubique físicamente estos puntos en la zona de trabajo antes de iniciar actividades.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PANTALLA 4: SEÑALES PARA DETENER LA TAREA ── -->
+      <div class="wizard-step !mt-1" id="step-4">
+        <div class="bg-white rounded-lg border border-slate-200 p-3 sm:p-4 custom-shadow flex flex-col max-h-[75dvh]">
+          <!-- Encabezado Fijo de la Tarjeta -->
+          <div class="border-b border-slate-100 pb-3 mb-2 flex items-center justify-between gap-3">
+            <div>
+              <h3 class="font-bold text-primary text-xs uppercase">Escoja dos o más situaciones</h3>
+              <p class="text-[10px] text-[#43474f] mt-0.5">Condiciones que requieran detener las actividades.</p>
+            </div>
+            <!-- Cinta / Contador flotante -->
+            <div class="bg-primary text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1 shrink-0 transition-colors duration-300" id="senales-counter-ribbon">
+              <span class="material-symbols-outlined text-[12px] text-accent" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+              <span id="senales-counter-text">0 seleccionadas</span>
+            </div>
+          </div>
+          <!-- Cuerpo Desplazable con los Items -->
+          <div class="overflow-y-auto pr-1 flex flex-col gap-2" id="body-senales" style="max-height: calc(75dvh - 120px);">
+            <!-- Renderizado dinámico -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PANTALLA 5: TIPOS DE TRABAJO ── -->
+      <div class="wizard-step !mt-1" id="step-5">
+        <div class="bg-white rounded-lg border border-slate-200 p-3 sm:p-4 custom-shadow space-y-3">
+          <div class="border-b border-slate-100 pb-1.5 mb-1 flex items-center justify-between gap-3">
+            <div>
+              <h3 class="font-bold text-primary text-xs uppercase flex items-center gap-1.5">
+                Tipos de Trabajo Asociados
+                <span class="bg-accent text-primary text-[10px] px-2 py-0.5 rounded-full font-bold font-mono transition-colors duration-300" id="tt-counter-badge" style="display: none;">0</span>
+              </h3>
+              <p class="text-[10px] text-[#43474f] mt-0.5">Seleccione las actividades de alto riesgo que se ejecutarán.</p>
+            </div>
+          </div>
+          <div id="body-tipos-trabajo" class="space-y-2">
+            <!-- Renderizado dinámico -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PANTALLA 6: PASOS (ANÁLIS DE RIESGO) ── -->
+      <div class="wizard-step !mt-1" id="step-6">
+        <div class="space-y-4">
+          <div class="flex justify-between items-center">
+            <h3 class="font-bold text-primary text-sm uppercase">Pasos del Análisis de Riesgo</h3>
+            <button class="bg-primary text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm" id="btn-add-step" type="button">
+              <span class="material-symbols-outlined text-[16px]">add_circle</span>
+              Agregar Paso
+            </button>
+          </div>
+          
+          <div class="space-y-3" id="steps-list">
+            <!-- Renderizado dinámico de pasos -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PANTALLA 7: RESUMEN TÉCNICO DEL ANÁLISIS ── -->
+      <div class="wizard-step !mt-1" id="step-7">
+        <div class="bg-white rounded-lg border border-slate-200 p-3 sm:p-4 custom-shadow space-y-4">
+          <div class="border-b border-slate-100 pb-3">
+            <h3 class="font-bold text-primary text-sm uppercase">Resumen Técnico del Análisis</h3>
+            <p class="text-xs text-[#43474f] mt-1">Revise el desglose consolidado de la tarea antes de firmar y aprobar.</p>
+          </div>
+          <div class="space-y-4" id="body-resumen">
+            <!-- Renderizado dinámico de la consolidación técnica -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PANTALLA 8: APROBACIÓN Y DESCARGA ── -->
+      <div class="wizard-step !mt-1" id="step-8">
+        <div class="bg-white rounded-lg border border-slate-200 p-3 sm:p-3.5 custom-shadow space-y-3">
+          <div class="border-b border-slate-100 pb-2">
+            <h3 class="font-bold text-primary text-sm uppercase">Aprobación del Formulario</h3>
+            <p class="text-xs text-[#43474f] mt-0.5">El supervisor de área o coordinador HSE debe firmar el documento.</p>
+          </div>
+
+          <div class="space-y-3" id="body-aprobacion">
+            <!-- Renderizado dinámico de los campos de firma y aprobación -->
+          </div>
+
+          <div class="pt-2.5 border-t border-slate-100 grid grid-cols-2 gap-2">
+            <!-- Botón principal para generar el PDF -->
+            <button class="w-full bg-primary text-white text-xs font-bold py-2 rounded-lg flex items-center justify-center gap-1.5 hover:opacity-95 disabled:bg-slate-300 disabled:text-slate-500 transition-all custom-shadow cursor-pointer outline-none" id="btn-generate-pdf" type="button" disabled>
+              <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+              <span>Generar PDF</span>
+            </button>
+            <button class="w-full border border-slate-200 text-[#43474f] text-xs font-semibold py-2 rounded-lg flex items-center justify-center gap-1.5 hover:bg-slate-50 transition-colors cursor-pointer outline-none" id="btn-print-fallback" type="button">
+              <span class="material-symbols-outlined text-[18px]">print</span>
+              <span>Impresión Estándar</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </form>
+  </main>
+
+  <!-- Barra de Navegación Fija Inferior -->
+  <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-between items-center px-4 md:px-8 bg-white border-t border-slate-200 shadow-lg h-14" id="wizard-navigation">
+    <button class="text-primary hover:bg-slate-50 px-4 py-1.5 rounded-lg flex items-center gap-1 text-sm font-semibold transition-transform active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent" id="btn-wizard-prev" disabled>
+      <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+      Anterior
+    </button>
+    <button class="bg-primary text-white px-6 py-1.5 rounded-lg flex items-center gap-1.5 text-sm font-bold shadow-md hover:opacity-95 transition-transform active:scale-95" id="btn-wizard-next">
+      Siguiente
+      <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+    </button>
+  </nav>
+
+  <!-- MODAL - VISTA PREVIA PDF -->
+  <div class="modal-overlay hidden fixed inset-0 bg-[#00193c]/50 backdrop-blur-sm flex items-center justify-center z-50" id="modal-preview" role="dialog" aria-modal="true">
+    <div class="bg-white rounded-lg border border-slate-200 w-full max-w-4xl mx-4 my-8 h-[90dvh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="bg-primary text-white p-4 flex justify-between items-center">
+        <div>
+          <h2 class="font-bold text-sm" id="modal-preview-title">Vista Previa del Documento</h2>
+          <span class="text-[10px] text-slate-300 font-medium" id="modal-preview-filename"></span>
+        </div>
+        <button class="text-white hover:bg-white/10 p-1.5 rounded-full" id="btn-preview-close">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="flex-grow p-1 bg-slate-100">
+        <iframe class="w-full h-full border-0 hidden" id="pdf-preview-frame"></iframe>
+        <div class="hidden flex flex-col items-center justify-center h-full p-6 text-center" id="pdf-preview-fallback">
+          <span class="material-symbols-outlined text-[48px] text-primary mb-3">download_for_offline</span>
+          <p class="font-bold text-primary mb-1">Vista previa no disponible</p>
+          <p class="text-xs text-[#43474f] mb-4">En dispositivos móviles debe descargar el archivo directamente.</p>
+          <button class="bg-primary text-white font-bold px-6 py-2.5 rounded-lg" id="btn-open-pdf-tab">Abrir PDF en pestaña</button>
+        </div>
+      </div>
+      <div class="p-4 border-t border-slate-200 flex justify-end gap-3 bg-slate-50">
+        <button class="border border-slate-200 text-[#43474f] font-semibold px-4 py-2 rounded-lg" id="btn-preview-cancel">Cancelar</button>
+        <button class="bg-primary text-white font-bold px-6 py-2 rounded-lg" id="btn-preview-confirm">Descargar PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL - CONFIRMACIÓN GENÉRICA -->
+  <div class="modal-overlay hidden fixed inset-0 bg-[#00193c]/50 backdrop-blur-sm flex items-center justify-center z-50" id="modal-confirm" role="dialog" aria-modal="true">
+    <div class="bg-white rounded-xl border border-slate-200 max-w-sm w-full mx-4 shadow-2xl overflow-hidden">
+      <div class="p-5">
+        <h2 class="font-bold text-primary text-xs uppercase tracking-wider mb-2.5" id="modal-confirm-title">Confirmación</h2>
+        <div class="text-xs text-[#43474f] leading-relaxed text-justify space-y-2" id="modal-confirm-message"></div>
+      </div>
+      <div class="p-3.5 bg-slate-50 border-t border-slate-100 flex justify-end gap-2.5">
+        <button class="border border-slate-200 text-[#43474f] text-xs font-semibold px-4 py-2.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer outline-none" id="btn-confirm-cancel">Cancelar</button>
+        <button class="bg-primary text-white text-xs font-bold px-5 py-2.5 rounded-lg shadow-md hover:opacity-95 transition-all active:scale-95 cursor-pointer outline-none" id="btn-confirm-ok">Aceptar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenedor para notificaciones Toast -->
+  <div id="toast-container" class="fixed top-5 right-5 z-[9999] flex flex-col gap-2.5 pointer-events-none"></div>
+
+  <!-- MODAL - AUTENTICACIÓN ADMINISTRADOR -->
+  <div class="modal-overlay hidden fixed inset-0 bg-[#00193c]/50 backdrop-blur-sm flex items-center justify-center z-50" id="modal-admin-auth" role="dialog" aria-modal="true">
+    <div class="bg-white rounded-xl border border-slate-200 max-w-sm w-full mx-4 shadow-2xl overflow-hidden">
+      <div class="p-5">
+        <h2 class="font-bold text-primary text-xs uppercase tracking-wider mb-2.5 flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">lock</span>
+          Acceso Administrador
+        </h2>
+        <p class="text-xs text-[#43474f] mb-4">Ingrese la clave de seguridad para modificar las configuraciones del sistema.</p>
+        <input type="password" id="inp-admin-password" class="w-full bg-white border border-slate-200 rounded-lg py-2.5 px-3 text-sm text-[#171c1f] focus:ring-2 focus:ring-primary focus:border-primary transition-all" placeholder="Ingrese la contraseña...">
+        <p id="lbl-admin-auth-error" class="text-[10px] text-red-600 mt-1 hidden font-semibold">Contraseña incorrecta. Intente de nuevo.</p>
+      </div>
+      <div class="p-3.5 bg-slate-50 border-t border-slate-100 flex justify-end gap-2.5">
+        <button class="border border-slate-200 text-[#43474f] text-xs font-semibold px-4 py-2.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer outline-none" id="btn-admin-auth-cancel">Cancelar</button>
+        <button class="bg-primary text-white text-xs font-bold px-5 py-2.5 rounded-lg shadow-md hover:opacity-95 transition-all active:scale-95 cursor-pointer outline-none" id="btn-admin-auth-submit">Ingresar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL - CONFIGURACIÓN DE BASES DE DATOS (MÁSTER) -->
+  <div class="modal-overlay hidden fixed inset-0 bg-[#00193c]/50 backdrop-blur-sm flex items-center justify-center z-50" id="modal-admin-config" role="dialog" aria-modal="true">
+    <div class="bg-white rounded-xl border border-slate-200 max-w-2xl w-full mx-4 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <!-- Encabezado -->
+      <div class="bg-primary p-4 text-white flex items-center justify-between">
+        <h2 class="font-bold text-xs uppercase tracking-wider flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px] text-accent">settings</span>
+          Configuración General de Bases de Datos
+        </h2>
+        <button class="text-white/80 hover:text-white flex items-center justify-center" id="btn-admin-config-close">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+      
+      <!-- Contenido Scrollable -->
+      <div class="p-5 overflow-y-auto space-y-6">
+        <!-- SECCIÓN 1: UBICACIONES -->
+        <div class="space-y-4">
+          <h3 class="font-bold text-xs text-primary uppercase border-b border-slate-100 pb-1.5 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[18px]">location_on</span>
+            1. Puntos de Encuentro & Duchas/Lavaojos
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Puntos de Encuentro -->
+            <div class="space-y-2">
+              <label class="block text-[10px] font-bold text-slate-500 uppercase">Puntos de Encuentro</label>
+              <div id="admin-list-encuentro" class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                <!-- Se inyecta dinámicamente -->
+              </div>
+              <button type="button" class="w-full border border-dashed border-slate-300 hover:border-primary text-xs font-semibold py-1.5 rounded-lg flex items-center justify-center gap-1.5 text-primary hover:bg-slate-50 transition-colors" id="btn-admin-add-encuentro">
+                <span class="material-symbols-outlined text-[16px]">add</span> Agregar Punto
+              </button>
+            </div>
+            
+            <!-- Duchas y Lavaojos -->
+            <div class="space-y-2">
+              <label class="block text-[10px] font-bold text-slate-500 uppercase">Duchas & Lavaojos</label>
+              <div id="admin-list-duchas" class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                <!-- Se inyecta dinámicamente -->
+              </div>
+              <button type="button" class="w-full border border-dashed border-slate-300 hover:border-primary text-xs font-semibold py-1.5 rounded-lg flex items-center justify-center gap-1.5 text-primary hover:bg-slate-50 transition-colors" id="btn-admin-add-ducha">
+                <span class="material-symbols-outlined text-[16px]">add</span> Agregar Ducha
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 2: RESPONSABLES -->
+        <div class="space-y-4">
+          <h3 class="font-bold text-xs text-primary uppercase border-b border-slate-100 pb-1.5 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[18px]">badge</span>
+            2. Base de Datos de Responsables
+          </h3>
+          
+          <!-- Formulario Agregar Nuevo Responsable -->
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 grid grid-cols-1 sm:grid-cols-4 gap-2.5 items-end">
+            <div class="space-y-1">
+              <label class="block text-[9px] font-bold text-slate-500 uppercase">Nombre</label>
+              <input type="text" id="admin-resp-nombre" class="w-full bg-white border border-slate-200 rounded-lg py-1.5 px-2.5 text-xs text-[#171c1f] focus:ring-1 focus:ring-primary focus:border-primary" placeholder="Ej: Juan">
+            </div>
+            <div class="space-y-1">
+              <label class="block text-[9px] font-bold text-slate-500 uppercase">Apellido</label>
+              <input type="text" id="admin-resp-apellido" class="w-full bg-white border border-slate-200 rounded-lg py-1.5 px-2.5 text-xs text-[#171c1f] focus:ring-1 focus:ring-primary focus:border-primary" placeholder="Ej: Pérez">
+            </div>
+            <div class="space-y-1">
+              <label class="block text-[9px] font-bold text-slate-500 uppercase">Cédula</label>
+              <input type="text" id="admin-resp-cedula" class="w-full bg-white border border-slate-200 rounded-lg py-1.5 px-2.5 text-xs text-[#171c1f] focus:ring-1 focus:ring-primary focus:border-primary" placeholder="C.C. / ID">
+            </div>
+            <div class="space-y-1">
+              <label class="block text-[9px] font-bold text-slate-500 uppercase">Área</label>
+              <select id="admin-resp-area" class="w-full bg-white border border-slate-200 rounded-lg py-1.5 px-2 text-xs text-[#171c1f] focus:ring-1 focus:ring-primary focus:border-primary">
+                <!-- Se inyecta dinámicamente -->
+              </select>
+            </div>
+            <button type="button" class="sm:col-span-4 bg-primary text-white text-xs font-bold py-2 rounded-lg hover:opacity-95 transition-all flex items-center justify-center gap-1.5" id="btn-admin-add-responsable">
+              <span class="material-symbols-outlined text-[16px]">person_add</span> Agregar Responsable
+            </button>
+          </div>
+          
+          <!-- Lista/Tabla de Responsables -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="block text-[10px] font-bold text-slate-500 uppercase">Responsables Registrados</label>
+              <input type="text" id="admin-resp-search" class="max-w-xs bg-white border border-slate-200 rounded-lg py-1 px-2.5 text-xs text-[#171c1f] focus:ring-1 focus:ring-primary focus:border-primary" placeholder="Filtrar por nombre o cédula...">
+            </div>
+            <div class="border border-slate-200 rounded-lg overflow-hidden max-h-56 overflow-y-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[9px]">
+                    <th class="p-2.5">Colaborador</th>
+                    <th class="p-2.5">Cédula</th>
+                    <th class="p-2.5">Área</th>
+                    <th class="p-2.5 text-center">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-table-responsables" class="divide-y divide-slate-100 text-[#171c1f]">
+                  <!-- Se inyecta dinámicamente -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="p-3.5 bg-slate-50 border-t border-slate-100 flex justify-end gap-2.5">
+        <button class="border border-slate-200 text-[#43474f] text-xs font-semibold px-4 py-2.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer outline-none" id="btn-admin-config-cancel">Cancelar</button>
+        <button class="bg-primary text-white text-xs font-bold px-5 py-2.5 rounded-lg shadow-md hover:opacity-95 transition-all active:scale-95 cursor-pointer outline-none" id="btn-admin-config-save">Guardar Todo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts del proyecto -->
+  <script src="lib/jspdf.umd.min.js"></script>
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.info('[PWA] Service Worker registrado en scope:', reg.scope))
+          .catch(err => console.error('[PWA] Fallo al registrar Service Worker:', err));
+      });
+    }
+  </script>
+</body>
+</html>
