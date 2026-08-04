@@ -2066,34 +2066,47 @@ const UIPasos = (() => {
         role="listitem">
 
         <!-- CABECERA -->
-        <div class="flex items-center justify-between gap-2 cursor-pointer select-none"
+        <div class="flex flex-col gap-2.5 cursor-pointer select-none"
           data-action="toggle" data-id="${idEsc}"
           role="button"
           tabindex="0"
           aria-expanded="${estaAbierto}"
           aria-controls="step-body-${idEsc}">
 
-          <div class="w-6 h-6 rounded-full bg-primary text-white text-xs font-black flex items-center justify-center shrink-0">
-            ${paso.numero}
-          </div>
-
-          <div class="flex-1 min-w-0 flex flex-col">
-            <div class="step-title-text text-xs font-bold text-primary whitespace-pre-wrap break-words ${tituloDesc ? '' : 'italic text-slate-400'}">
+          <!-- Fila 1: Número y Descripción del Paso (Ancho Completo) -->
+          <div class="flex items-start gap-2.5">
+            <div class="w-6 h-6 rounded-full bg-primary text-white text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
+              ${paso.numero}
+            </div>
+            <div class="flex-1 min-w-0 step-title-text text-xs font-bold text-primary whitespace-pre-wrap break-words ${tituloDesc ? '' : 'italic text-slate-400'}">
               ${tituloDesc || 'Describa este paso...'}
             </div>
-            ${_htmlContadores(paso)}
           </div>
 
-          <div class="flex items-center gap-2">
-            <div class="completitud-badge-container">
-              ${completitudBadge}
+          <!-- Fila 2: Estados, Contadores y Acciones (Ubicadas debajo de la descripción) -->
+          <div class="flex items-center justify-between gap-2 flex-wrap border-t border-slate-100/50 pt-2">
+            <!-- Izquierda: Estado y Contadores -->
+            <div class="flex items-center gap-2 flex-wrap">
+              <div class="completitud-badge-container">
+                ${completitudBadge}
+              </div>
+              ${_htmlContadores(paso)}
             </div>
-            <span class="material-symbols-outlined text-slate-400 text-[18px] transition-transform duration-300 chevron-icon ${estaAbierto ? 'rotate-180' : ''}">
-              keyboard_arrow_down
-            </span>
+            
+            <!-- Derecha: Chevron y Botones de control -->
+            <div class="flex items-center gap-1.5 ml-auto">
+              <!-- Chevron expandible -->
+              <span class="material-symbols-outlined text-slate-400 text-[18px] transition-transform duration-300 chevron-icon ${estaAbierto ? 'rotate-180' : ''}">
+                keyboard_arrow_down
+              </span>
+              
+              <!-- Separador vertical sutil -->
+              <span class="w-[1px] h-3.5 bg-slate-200 block mx-0.5"></span>
+              
+              <!-- Acciones del paso -->
+              ${_htmlAcciones(paso, idx, total)}
+            </div>
           </div>
-
-          ${_htmlAcciones(paso, idx, total)}
         </div>
 
         <!-- CUERPO (colapsable) -->

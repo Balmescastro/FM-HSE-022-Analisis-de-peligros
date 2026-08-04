@@ -18,7 +18,7 @@
    skipWaiting + clients.claim aseguran que un SW nuevo tome control de
    inmediato.
    ──────────────────────────────────────────────────────────────── */
-const CACHE_VERSION = 'fmhse022-v2';
+const CACHE_VERSION = 'fmhse022-v3';
 
 // Conjunto completo de recursos críticos (RT-2A.2 — inventario exhaustivo).
 const PRECACHE_URLS = [
