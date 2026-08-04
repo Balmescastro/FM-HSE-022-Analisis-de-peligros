@@ -428,12 +428,12 @@
 
       <!-- ── PANTALLA 7: RESUMEN TÉCNICO DEL ANÁLISIS ── -->
       <div class="wizard-step !mt-1" id="step-7">
-        <div class="bg-white rounded-lg border border-slate-200 p-3 sm:p-4 custom-shadow space-y-4">
-          <div class="border-b border-slate-100 pb-3">
+        <div class="bg-white rounded-lg border border-slate-200 p-3 sm:p-4 custom-shadow flex flex-col max-h-[75dvh]">
+          <div class="border-b border-slate-100 pb-3 mb-2">
             <h3 class="font-bold text-primary text-sm uppercase">Resumen Técnico del Análisis</h3>
             <p class="text-xs text-[#43474f] mt-1">Revise el desglose consolidado de la tarea antes de firmar y aprobar.</p>
           </div>
-          <div class="space-y-4" id="body-resumen">
+          <div class="overflow-y-auto pr-1 flex flex-col gap-2" id="body-resumen" style="max-height: calc(75dvh - 120px);">
             <!-- Renderizado dinámico de la consolidación técnica -->
           </div>
         </div>
@@ -524,6 +524,51 @@
 
   <!-- Contenedor para notificaciones Toast -->
   <div id="toast-container" class="fixed top-5 right-5 z-[9999] flex flex-col gap-2.5 pointer-events-none"></div>
+
+
+  <!-- MODAL - CONFIRMACIÓN FINALIZACIÓN Y CIERRE -->
+  <div class="modal-overlay hidden fixed inset-0 bg-[#00193c]/50 backdrop-blur-sm flex items-center justify-center z-[100] animate-fade-in" id="modal-finalizar-app" role="dialog" aria-modal="true">
+    <div class="bg-white rounded-xl border border-slate-200 max-w-md w-full mx-4 shadow-2xl overflow-hidden animate-scale-in">
+      <div class="p-5 flex flex-col gap-4">
+        <div class="flex items-start gap-3.5">
+          <div class="w-10 h-10 rounded-full bg-blue-50 text-primary flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[22px]">power_settings_new</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h3 class="font-bold text-primary text-xs uppercase tracking-wider">Cerrar Aplicación</h3>
+            <p class="text-xs text-slate-500 mt-1">¿Está seguro de que desea salir? Seleccione cómo desea proceder con el formulario actual:</p>
+          </div>
+        </div>
+        
+        <div class="flex flex-col gap-2.5">
+          <!-- Opción A: Guardar y Cerrar -->
+          <button type="button" id="btn-finalizar-guardar" class="w-full text-left bg-slate-50 border border-slate-200 hover:border-primary hover:bg-blue-50/30 p-3 rounded-lg flex items-center gap-3 transition-all cursor-pointer group outline-none">
+            <div class="w-8 h-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center shrink-0 group-hover:bg-green-200 transition-colors">
+              <span class="material-symbols-outlined text-[18px]">save</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-xs font-bold text-primary">Cerrar guardando el formulario</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">Guarda el progreso en este dispositivo para continuar luego.</div>
+            </div>
+          </button>
+          
+          <!-- Opción B: Cerrar sin guardar -->
+          <button type="button" id="btn-finalizar-descartar" class="w-full text-left bg-slate-50 border border-slate-200 hover:border-red-300 hover:bg-red-50/20 p-3 rounded-lg flex items-center gap-3 transition-all cursor-pointer group outline-none">
+            <div class="w-8 h-8 rounded-full bg-red-100 text-red-700 flex items-center justify-center shrink-0 group-hover:bg-red-200 transition-colors">
+              <span class="material-symbols-outlined text-[18px]">delete_forever</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-xs font-bold text-red-700">Cerrar sin guardar formulario</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">Limpia todos los datos cargados y restablece el formulario.</div>
+            </div>
+          </button>
+        </div>
+      </div>
+      <div class="p-3.5 bg-slate-50 border-t border-slate-100 flex justify-end gap-2.5">
+        <button class="border border-slate-200 text-[#43474f] text-xs font-semibold px-4 py-2.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer outline-none" id="btn-finalizar-cancelar">Cancelar y Volver</button>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL - AUTENTICACIÓN ADMINISTRADOR -->
   <div class="modal-overlay hidden fixed inset-0 bg-[#00193c]/50 backdrop-blur-sm flex items-center justify-center z-50" id="modal-admin-auth" role="dialog" aria-modal="true">
