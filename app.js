@@ -1961,7 +1961,7 @@ const UIPasos = (() => {
     const idEsc     = Utils.escaparHtml(paso.id);
 
     return `
-      <div class="flex items-center gap-1 shrink-0 ml-2">
+      <div class="flex items-center gap-0.5 shrink-0 ml-1">
         <button type="button"
           class="p-1 hover:bg-slate-100 rounded text-slate-500 hover:text-primary transition-colors disabled:opacity-30 disabled:pointer-events-none"
           data-action="up" data-id="${idEsc}"
@@ -2078,15 +2078,13 @@ const UIPasos = (() => {
             <div class="w-6 h-6 rounded-full bg-primary text-white text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
               ${paso.numero}
             </div>
-            <div class="flex-1 min-w-0 step-title-text text-xs font-bold text-primary whitespace-pre-wrap break-words ${tituloDesc ? '' : 'italic text-slate-400'}">
-              ${tituloDesc || 'Describa este paso...'}
-            </div>
+            <div class="flex-1 min-w-0 step-title-text text-xs font-bold text-primary whitespace-pre-wrap break-words ${tituloDesc ? '' : 'italic text-slate-400'}">${tituloDesc || 'Describa este paso...'}</div>
           </div>
 
           <!-- Fila 2: Estados, Contadores y Acciones (Ubicadas debajo de la descripción) -->
-          <div class="flex items-center justify-between gap-2 flex-wrap border-t border-slate-100/50 pt-2">
+          <div class="flex items-center justify-between gap-1 border-t border-slate-100/50 pt-2">
             <!-- Izquierda: Estado y Contadores -->
-            <div class="flex items-center gap-2 flex-wrap">
+            <div class="flex items-center gap-1 shrink-0">
               <div class="completitud-badge-container">
                 ${completitudBadge}
               </div>
@@ -2094,14 +2092,11 @@ const UIPasos = (() => {
             </div>
             
             <!-- Derecha: Chevron y Botones de control -->
-            <div class="flex items-center gap-1.5 ml-auto">
+            <div class="flex items-center gap-0.5 ml-auto shrink-0">
               <!-- Chevron expandible -->
               <span class="material-symbols-outlined text-slate-400 text-[18px] transition-transform duration-300 chevron-icon ${estaAbierto ? 'rotate-180' : ''}">
                 keyboard_arrow_down
               </span>
-              
-              <!-- Separador vertical sutil -->
-              <span class="w-[1px] h-3.5 bg-slate-200 block mx-0.5"></span>
               
               <!-- Acciones del paso -->
               ${_htmlAcciones(paso, idx, total)}
