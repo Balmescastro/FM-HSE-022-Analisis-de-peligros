@@ -1133,6 +1133,45 @@ const Wizard = (() => {
       }
     });
 
+    // Enlazar botones del Modal de Finalización y Cierre
+    const modalFinalizar = document.getElementById('modal-finalizar-app');
+    
+    document.getElementById('btn-finalizar-cancelar')?.addEventListener('click', () => {
+      modalFinalizar?.classList.add('hidden');
+    });
+
+    document.getElementById('btn-finalizar-guardar')?.addEventListener('click', () => {
+      State.guardarBorrador();
+      modalFinalizar?.classList.add('hidden');
+      Utils.toast('Progreso guardado de forma local.', 'success');
+      
+      // Intentar cerrar la ventana/app
+      window.close();
+      
+      // Si la ventana sigue abierta, mostrar pantalla de salida segura
+      setTimeout(() => {
+        document.body.innerHTML = `
+          <div class="fixed inset-0 flex flex-col items-center justify-center p-6 text-center bg-[#00193c] text-white">
+            <span class="material-symbols-outlined text-[64px] text-green-400 mb-4 animate-bounce">check_circle</span>
+            <h1 class="text-xl font-bold uppercase tracking-wider">¡Formulario Guardado!</h1>
+            <p class="text-xs text-slate-300 mt-2 max-w-[280px]">El progreso actual ha sido guardado de forma segura en este dispositivo.</p>
+            <p class="text-xs text-slate-400 mt-4">Ya puede salir de la aplicación o cerrar esta pestaña de su navegador.</p>
+            <button onclick="location.reload()" class="mt-6 bg-[#fcd400] text-primary text-xs font-bold py-2 px-5 rounded-lg shadow-md cursor-pointer hover:bg-[#e0bd00] transition-colors">Volver a Empezar</button>
+          </div>
+        `;
+      }, 500);
+    });
+
+    document.getElementById('btn-finalizar-descartar')?.addEventListener('click', () => {
+      State.descartarBorrador();
+      State.resetear();
+      modalFinalizar?.classList.add('hidden');
+      Utils.toast('Formulario borrado. Restableciendo...', 'info');
+      setTimeout(() => {
+        location.reload();
+      }, 800);
+    });
+
     mostrarPaso(1);
   }
 
@@ -1214,6 +1253,8 @@ const Wizard = (() => {
   function nextStep() {
     if (currentStep < totalSteps) {
       mostrarPaso(currentStep + 1);
+    } else {
+      document.getElementById('modal-finalizar-app')?.classList.remove('hidden');
     }
   }
 
@@ -2006,7 +2047,7 @@ const UIPasos = (() => {
     const borderClass = completitud.estado === 'completo' ? 'border-green-300 bg-green-50/5' : 'border-slate-200 bg-white';
 
     const tituloDesc  = paso.descripcion.trim()
-      ? Utils.escaparHtml(paso.descripcion.substring(0, 50) + (paso.descripcion.length > 50 ? '…' : ''))
+      ? Utils.escaparHtml(paso.descripcion)
       : null;
 
     const completitudBadge = completitud.estado === 'completo'
@@ -2037,7 +2078,7 @@ const UIPasos = (() => {
           </div>
 
           <div class="flex-1 min-w-0 flex flex-col">
-            <div class="step-title-text text-xs font-bold text-primary truncate ${tituloDesc ? '' : 'italic text-slate-400'}">
+            <div class="step-title-text text-xs font-bold text-primary whitespace-pre-wrap break-words ${tituloDesc ? '' : 'italic text-slate-400'}">
               ${tituloDesc || 'Describa este paso...'}
             </div>
             ${_htmlContadores(paso)}
@@ -2162,11 +2203,13 @@ const UIPasos = (() => {
     const titleEl = card.querySelector('.step-title-text');
     if (titleEl) {
       const tituloDesc = paso.descripcion.trim()
-        ? Utils.escaparHtml(paso.descripcion.substring(0, 50) + (paso.descripcion.length > 50 ? '…' : ''))
+        ? Utils.escaparHtml(paso.descripcion)
         : null;
       titleEl.textContent = tituloDesc || 'Describa este paso...';
       titleEl.classList.toggle('italic', !tituloDesc);
       titleEl.classList.toggle('text-slate-400', !tituloDesc);
+      titleEl.classList.remove('truncate');
+      titleEl.classList.add('whitespace-pre-wrap', 'break-words');
     }
 
     const compEl = card.querySelector('.completitud-badge-container');
@@ -2342,6 +2385,17 @@ const UIPasos = (() => {
     if (estaCerrado) {
       bodyEl.classList.remove('hidden');
       chevron?.classList.add('rotate-90');
+
+      if (tipo === 'controles') {
+        const peligrosPanel = document.getElementById(`subpanel-peligros-${id}`);
+        const peligrosBody = document.getElementById(`subpanel-body-peligros-${id}`);
+        const peligrosChevron = peligrosPanel?.querySelector('.subpanel-chevron');
+        if (peligrosBody && !peligrosBody.classList.contains('hidden')) {
+          peligrosBody.classList.add('hidden');
+          peligrosChevron?.classList.remove('rotate-90');
+          peligrosPanel?.querySelector('[data-subpanel]')?.setAttribute('aria-expanded', 'false');
+        }
+      }
     } else {
       bodyEl.classList.add('hidden');
       chevron?.classList.remove('rotate-90');
@@ -2401,8 +2455,26 @@ const UIPasos = (() => {
 
     lista.addEventListener('click', e => {
       const subHeader = e.target.closest('[data-subpanel]');
-      if (!subHeader) return;
-      _toggleSubpanel(subHeader.dataset.subpanel, subHeader.dataset.id);
+      if (subHeader) {
+        _toggleSubpanel(subHeader.dataset.subpanel, subHeader.dataset.id);
+        return;
+      }
+
+      const btnNuevo = e.target.closest('.btn-nuevo-paso-acc');
+      if (btnNuevo) {
+        const id = btnNuevo.dataset.pasoId;
+        _expandidos.delete(id);
+        _agregar();
+        return;
+      }
+
+      const btnFin = e.target.closest('.btn-fin-pasos-acc');
+      if (btnFin) {
+        _expandidos.clear();
+        _renderLista();
+        Utils.toast('Todos los pasos han sido contraídos.', 'info');
+        return;
+      }
     });
 
     lista.addEventListener('input', e => {
@@ -2876,6 +2948,22 @@ const UIControles = (() => {
         ${leyenda}
         ${selectorVista}
         ${cuerpo}
+        
+        <!-- Botones de Acción de Flujo de Pasos -->
+        <div class="flex items-center justify-end gap-3 mt-4 pt-3 border-t border-slate-100 flex-wrap">
+          <button type="button" 
+            class="flex items-center gap-1.5 bg-[#fcd400] text-primary hover:bg-[#e0bd00] transition-colors rounded-lg py-1.5 px-3 text-xs font-bold shadow-sm btn-nuevo-paso-acc cursor-pointer"
+            data-paso-id="${Utils.escaparHtml(pasoId)}">
+            <span class="material-symbols-outlined text-[16px] font-bold">add</span>
+            Nuevo Paso
+          </button>
+          <button type="button" 
+            class="flex items-center gap-1.5 bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors rounded-lg py-1.5 px-3 text-xs font-bold border border-slate-200 btn-fin-pasos-acc cursor-pointer"
+            data-paso-id="${Utils.escaparHtml(pasoId)}">
+            <span class="material-symbols-outlined text-[16px]">done_all</span>
+            Fin de Pasos
+          </button>
+        </div>
       </div>`;
 
     container.innerHTML = html;
