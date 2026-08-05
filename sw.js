@@ -17,8 +17,8 @@
    El versionado de caché se conserva como mecanismo de limpieza, y
    skipWaiting + clients.claim aseguran que un SW nuevo tome control de
    inmediato.
-   ──────────────────────────────────────────────────────────────── */
-const CACHE_VERSION = 'fmhse022-v3';
+    ──────────────────────────────────────────────────────────────── */
+const CACHE_VERSION = 'fmhse022-v5';
 
 // Conjunto completo de recursos críticos (RT-2A.2 — inventario exhaustivo).
 const PRECACHE_URLS = [
@@ -41,6 +41,13 @@ const PRECACHE_URLS = [
   './assets/arial-narrow-bold.b64.txt',
   './assets/logo.b64.txt',
   './assets/logo.png',
+  // Fuentes locales
+  './assets/material-symbols.ttf',
+  './assets/inter-400.ttf',
+  './assets/inter-500.ttf',
+  './assets/inter-600.ttf',
+  './assets/inter-700.ttf',
+  './assets/inter-800.ttf',
   // Instalación
   './manifest.json',
   './assets/icon-192.png',

@@ -2418,6 +2418,22 @@ const UIPasos = (() => {
         else                     UIControles.renderEnPaso(id, bodyEl);
       }
     }
+
+    // Auto-scroll suave al abrir Medidas de Control para alinear el paso bajo el encabezado fijo
+    if (estaCerrado && tipo === 'controles') {
+      setTimeout(() => {
+        const card = document.getElementById(`step-card-${id}`);
+        if (card) {
+          const rect = card.getBoundingClientRect();
+          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+          const targetY = rect.top + scrollTop - 100; // 100px para librar la cabecera fija
+          window.scrollTo({
+            top: targetY,
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
+    }
   }
 
   function _renumerarPasos(pasos) {
